@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d496e976-9afb-4ddd-a418-e5e50ee50b52" >
+		<http:listener-connection host="0.0.0.0" port="8092" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d6cfa5ac-665f-4f06-9e57-6a6bfe58eb2c" >
+		<http:request-connection host="localhost" port="8092" />
+	</http:request-config>
+	<flow name="mule-http-exampleFlow" doc:id="2c3a68da-2681-4200-828c-70033f692ee2" >
+		<http:listener doc:name="Listener" doc:id="b3bbbb8a-ee84-46f6-85d7-1c1f58943868" config-ref="HTTP_Listener_config" path="hello"/>
+		<set-payload value='#["Hello World"]' doc:name="Set Payload" doc:id="bc17604f-964f-4605-af67-58dcda8c0c6f" />
+	</flow>
+	<flow name="mule-http-consumerflow" doc:id="af917d34-f5dd-473c-adbe-a142d40cfc08" >
+		<scheduler doc:name="Scheduler" doc:id="c6daf063-ae6a-4fdd-aed4-856a726eb31d" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="5000"/>
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="Request" doc:id="3c2620a9-dc71-45a3-9dca-8ddc0bd4130c" config-ref="HTTP_Request_configuration" path="hello" target="response">
+			<reconnect />
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="f341d6e4-851c-49f4-a621-cd784c479e4b" message="#[vars.response]"/>
+	</flow>
+</mule>
